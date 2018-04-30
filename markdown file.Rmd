@@ -31,6 +31,11 @@ SELECT *
 FROM imdb.title t 
 where kind_id = 1
 and production_year > 1999
+
+#filter for gross
+SELECT *
+FROM imdb.movie_info
+WHERE info_type_id = 107;
 ```
 
 
