@@ -19,10 +19,13 @@ imdb <- dbConnect_scidb(dbname = "imdb")
 - [] combination of both? looking at highest rated and blockbuster films and seeing how many are female led
 
 
-
-
-
-
+```{r}
+#filter for english language
+SELECT *
+FROM imdb.movie_info
+WHERE info_type_id = 4
+AND info = 'English';
+```
 
 
 
