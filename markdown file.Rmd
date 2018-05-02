@@ -2,7 +2,14 @@
 title: "Markdown file"
 author: "Marissa Freed"
 date: "4/30/2018"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_width: 10
+    fig_length: 8
+    theme: lumen
+    fig_caption: true
 ---
 
 ```{r setup, include = FALSE}
