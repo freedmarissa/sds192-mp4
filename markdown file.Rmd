@@ -46,14 +46,13 @@ WHERE info_type_id = 107;
 ```
 
 ```{r}
-SELECT *
+SELECT t.id, title, kind_id, production_year, movie_id, info_type_id, info AS language
 FROM imdb.title t 
 join imdb.movie_info m on t.id = m.movie_id
-group by movie_id
-having m.info_type_id = 4 
-and m.info like '%English%'
-and kind_id = 1;
-and t.production_year > 1999;
+having kind_id = 1 
+and info like '%English%'
+and production_year > 1999
+and info_type_id IN (4, 107);
 ```
 
 
