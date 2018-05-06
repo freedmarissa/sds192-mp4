@@ -112,9 +112,12 @@ Average, minumum, and maximum ratios of women to men in the top 100 opening day 
 gender_gross %>%
   summarize(average_f = mean(ratiof))
 gender_gross %>%
-  summarize(max_f = max(ratiof))
+  arrange(desc(ratiof)) %>%
+  head(n=5)
 gender_gross %>%
-  summarize(min_f = min(ratiof))
+  arrange(ratiof) %>%
+  head(n=5)
+  
 ```
 
 ```{r}
@@ -141,10 +144,23 @@ ratings_table2 <- as.data.table(ratings_table)
 joined_votes <- votes_table2 %>%
   inner_join(ratings_table2, by = c("id", "title", "production_year")) %>%
   filter(production_year > 1999) %>%
+  rename(movie_id = id) %>%
   arrange(desc(rating))
 ```
 
-
-
-
+```{r gender ratings}
+gendervotes <- joined_votes %>%
+  inner_join(gender_total1, by ="movie_id") %>%
+  head(n = 100)
+gendervotes
+gendervotes %>%
+  summarize(average_f = mean(ratiof))
+gendervotes %>%
+  arrange(desc(ratiof)) %>%
+  head(n=5)
+gendervotes %>%
+  arrange(ratiof) %>%
+  head(n=5)
+  
+```
 
