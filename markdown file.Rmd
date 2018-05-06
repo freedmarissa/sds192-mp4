@@ -55,7 +55,21 @@ gendergross <- gendergross %>%
   filter(grepl("\\(USA\\)", gross)) %>%
   arrange(desc(gross_numeric))
 
-gendergross
+char_total <- gendergross %>%
+  group_by(movie_id) %>%
+  summarize(total_people = n_distinct(char_id))
+
+gender_total <- gendergross %>%
+  group_by(movie_id, gender) %>%
+  summarize(gendertot = n_distinct(char_id)) %>%
+  full_join(char_total, by = "movie_id")
+
+gender_total
+gender_total %>%
+  filter(gender == 'f') %>%
+  group_by(movie_id) %>%
+  mutate(ratiof = gendertot/total_people)
+
 ```
 
 ```{r}
