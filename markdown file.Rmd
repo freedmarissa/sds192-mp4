@@ -27,55 +27,11 @@ imdb <- dbConnect_scidb(dbname = "imdb")
 - [] combination of both? looking at highest rated and blockbuster films and seeing how many are female led
 
 
-```{r filters}
-#filter for english language
-SELECT *
-FROM imdb.movie_info
-WHERE info_type_id = 4
-AND info = 'English';
-
-#filter for 21st Century
-SELECT * 
-FROM imdb.title t 
-where kind_id = 1
-and production_year > 1999
-
-#filter for gross
-SELECT *
-FROM imdb.movie_info
-WHERE info_type_id = 107;
-```
-
 
 
 issue: the gross info category shows weekly gross for every week the film was open, so I think we're better off looking solely at opening weekend sales.
 
-```{r}
-english_table <- imdb %>%
-  dbGetQuery("SELECT t.id, title, kind_id, production_year, movie_id, info_type_id, info AS language
-FROM imdb.title t 
-join imdb.movie_info m on t.id = m.movie_id
-having kind_id = 1 
-and info like '%English%'
-and production_year > 1999
-and info_type_id = 4;")
 
-english_table2 <- as.data.table(english_table)
-```
-
-```{r}
-#Opening Weekend Grosses
-gross_table <- imdb %>%
-  dbGetQuery("SELECT t.id, title, kind_id, production_year, info_type_id, info
-FROM imdb.title t 
-join imdb.movie_info m on t.id = m.movie_id
-having kind_id = 1 
-and production_year > 1999
-and info_type_id = 108
-and info like '%USA%';")
-
-gross_table2 <- as.data.table(gross_table)
-```
 
 ```{r}
 joined_gross <- gross_table2 %>%
@@ -120,14 +76,6 @@ joined_votes <- votes_table2 %>%
 
 
 
-```{r actresses/characters}
-imdb %>%
-dbGetQuery("SELECT n.name, gender, person_id, movie_id, person_role_id, cn.name
-from imdb.name n
-join imdb.cast_info ci on n.id = ci.person_id
-join imdb.char_name cn on cn.id = ci.person_role_id;")
-
-```
 
 
 
