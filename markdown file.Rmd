@@ -95,6 +95,7 @@ joined_gross <-  gross_table %>%
   mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
          gross_numeric = parse_number(gross_string)) %>%
   filter(grepl("\\(USA\\)", info)) %>%
+  filter(grepl("screens\\)", info)) %>%
   arrange(desc(gross_numeric))
 joined_gross
 
