@@ -76,6 +76,9 @@ gross_table <- imdb %>%
   dbGetQuery(gross_query)
 
 gross_table2 <- as.data.table(gross_table)
+
+gross_table2 %>%
+  inner_join(english_table2, by = "id")
 ```
 
 
