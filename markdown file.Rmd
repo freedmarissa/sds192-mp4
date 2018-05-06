@@ -53,6 +53,23 @@ having kind_id = 1
 and production_year > 1999
 and info_type_id = 108
 and info like '%USA%';")
+
+votes_table <- imdb %>%
+  dbGetQuery("SELECT t.id, t.title, t.production_year, 
+  miv.info AS votes
+FROM title t
+JOIN movie_info_idx AS miv ON miv.movie_id = t.id
+WHERE t.kind_id = 1
+  AND miv.info_type_id = 100
+  AND miv.info > 100000;")
+
+ratings_table <- imdb %>%
+  dbGetQuery("SELECT t.id, t.title, t.production_year, mir.info AS rating
+FROM title t
+JOIN movie_info_idx AS mir ON mir.movie_id = t.id
+WHERE t.kind_id = 1
+  AND mir.info_type_id = 101;")
+
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -80,19 +97,19 @@ gender_total1 <- gender_total %>%
 
 ```{r, warning=FALSE, message=FALSE}
 joined_gross <- gross_table %>%
-  inner_join(english_table, by = c("id", "title", "kind_id", "production_year")) %>% 
+  inner_join(english_table, by = c("id", "title", "kind_id", "production_year")) %>% #join table showing english movies with table showing gross
   mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
-         gross_numeric = parse_number(gross_string)) %>%
-  filter(grepl("\\(USA\\)", info)) %>%
-  filter(grepl("screens\\)", info)) %>%
+         gross_numeric = parse_number(gross_string)) %>% #Used regular expressions to create a new column where gross is a numeric vector
+  filter(grepl("\\(USA\\)", info)) %>% #Used regular expressions to filter the info column to movies opening in the USA
+  filter(grepl("screens\\)", info)) %>% #Used regular expressions to filter the info column to ones that show how many screens the movie was shown on in the opening weekend
   arrange(desc(gross_numeric))
 joined_gross
 
 gender_gross <- joined_gross %>%
-  full_join(gender_total1, by = "movie_id") %>%
-  select(c(1, 2, 4, 6, 11, 12, 13, 14, 15))%>%
-  arrange(desc(gross_numeric)) %>%
-  head(n = 100)
+  full_join(gender_total1, by = "movie_id") %>% #join previous table with table showing ratios of women to men
+  select(c(1, 2, 4, 6, 11, 12, 13, 14, 15))%>% #remove extraneous columns
+  arrange(desc(gross_numeric)) %>% #show in descending order
+  head(n = 100) #limit to 100 rows to get only top 100 grossing movies in opening weekend
 gender_gross
 ```
 
@@ -109,38 +126,22 @@ gender_gross %>%
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-#Top 100 Rated Films
-votes_table <- imdb %>%
-  dbGetQuery("SELECT t.id, t.title, t.production_year, 
-  miv.info AS votes
-FROM title t
-JOIN movie_info_idx AS miv ON miv.movie_id = t.id
-WHERE t.kind_id = 1
-  AND miv.info_type_id = 100
-  AND miv.info > 100000;")
-
-ratings_table <- imdb %>%
-  dbGetQuery("SELECT t.id, t.title, t.production_year, mir.info AS rating
-FROM title t
-JOIN movie_info_idx AS mir ON mir.movie_id = t.id
-WHERE t.kind_id = 1
-  AND mir.info_type_id = 101;")
-
-votes_table2 <- as.data.table(votes_table)
-ratings_table2 <- as.data.table(ratings_table)
-
-joined_votes <- votes_table2 %>%
-  inner_join(ratings_table2, by = c("id", "title", "production_year")) %>%
-  filter(production_year > 1999) %>%
+joined_votes <- votes_table %>%
+  inner_join(ratings_table, by = c("id", "title", "production_year")) %>% #join the table showing imdb ratings with the table showing votes
+  filter(production_year > 1999) %>% #filter show only showing movies released in 2000 or later
   rename(movie_id = id) %>%
-  arrange(desc(rating))
+  arrange(desc(rating)) #arrange from highest to lowest rating
 ```
 
 ```{r gender ratings, warning=FALSE, message=FALSE}
 gendervotes <- joined_votes %>%
-  inner_join(gender_total1, by ="movie_id") %>%
-  head(n = 100)
+  inner_join(gender_total1, by ="movie_id") %>% #join table with votes and ratings with table with ratio of women to men
+  head(n = 100) #show top 100 rated movies
 gendervotes
+```
+
+Average, minumum, and maximum ratios of women to men in the top 100 ratings
+```{r}
 gendervotes %>%
   summarize(average_f = mean(ratiof))
 gendervotes %>%
