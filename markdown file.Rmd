@@ -181,7 +181,7 @@ gendervotes %>%
   head(n=5)
 ```
 
-It’s important to note that IMDb ratings do not always equally represent the opinions of men and women. An [article]{https://fivethirtyeight.com/features/what-if-online-movie-ratings-werent-based-almost-entirely-on-what-men-think/} from FiveThirtyEight, aptly titled “What if Online Movie Ratings Weren’t Based Almost Entirely On What Men Think?” discusses the significant bias on men's’ opinions that is apparent in IMDb ratings, as well as the implications of this disparity. 
+It’s important to note that IMDb ratings do not always equally represent the opinions of men and women. An [article]{https://fivethirtyeight.com/features/what-if-online-movie-ratings-werent-based-almost-entirely-on-what-men-think/} from FiveThirtyEight, aptly titled “What if Online Movie Ratings Weren’t Based Almost Entirely On What Men Think?” discusses the significant bias on men's’ opinions that is apparent in IMDb ratings, as well as the implications of this disparity. Below are box plots showing the range of ratios in gross earnings and ratings.  The mean for ratings is lower than the mean for gross earnings, which is unsurprising based on, as the article discusses, the underrepresentation of female voices in IMDb ratings.
 
 ```{r, warning=FALSE, message=FALSE}
 ggplot(gendervotes, aes(x="", y = ratiof))+
