@@ -83,9 +83,11 @@ joined_gross <- gross_table2 %>%
 joined_gross <- joined_gross %>%
   mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
          gross = parse_number(gross_string)) %>%
+  filter(grepl("\\(USA\\)", info)) %>%
   arrange(desc(gross))
 
-joined_table
+joined_gross
+
 ```
 
 ```{r}
