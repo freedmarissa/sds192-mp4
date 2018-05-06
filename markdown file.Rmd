@@ -107,10 +107,14 @@ gender_gross <- joined_gross %>%
 gender_gross
 ```
 
-Average ratio of women to men in the top 100 opening day gross
+Average, minumum, and maximum ratios of women to men in the top 100 opening day gross
 ```{r}
 gender_gross %>%
   summarize(average_f = mean(ratiof))
+gender_gross %>%
+  summarize(max_f = max(ratiof))
+gender_gross %>%
+  summarize(min_f = min(ratiof))
 ```
 
 ```{r}
