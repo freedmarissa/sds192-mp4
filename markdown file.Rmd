@@ -183,13 +183,13 @@ It’s important to note that IMDb ratings do not always equally represent the o
 
 ```{r, warning=FALSE, message=FALSE}
 ggplot(gendervotes, aes(x="", y = ratiof))+
-  geom_boxplot(ymin = 0.0, ymax = 0.5, alpha = 0.5, fill = "#78566F") +
+  geom_boxplot(alpha = 0.5, fill = "#78566F") +
   coord_flip() +
   labs(x = NULL, y = "Ratio of Women to Men", title = "Ratio of Women to Men in 100 Top Rated Films", subtitle = "Using IMDb Ratings") +
   theme_fivethirtyeight()
 
 ggplot(gender_gross, aes(x="", y = ratiof))+
-  geom_boxplot(ymin = 0.0, ymax = 0.5, alpha = 0.5, fill = "#EE8A78") +
+  geom_boxplot(alpha = 0.5, fill = "#EE8A78") +
   coord_flip() +
   labs(x = NULL, y = "Ratio of Women to Men", title = "Ratio of Women to Men in 100 Top Grossing Films", subtitle = "American Opening Weekends") +
   theme_fivethirtyeight()
