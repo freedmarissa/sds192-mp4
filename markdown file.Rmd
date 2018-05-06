@@ -101,10 +101,16 @@ joined_gross
 
 gender_gross <- joined_gross %>%
   full_join(gender_total1, by = "movie_id") %>%
-  select(c(1, 2, 4, 6, 11, 12, 13, 14, 15)) %>%
-  unique(fromLast = TRUE)
-
+  select(c(1, 2, 4, 6, 11, 12, 13, 14, 15))%>%
+  arrange(desc(gross_numeric)) %>%
+  head(n = 100)
 gender_gross
+```
+
+Average ratio of women to men in the top 100 opening day gross
+```{r}
+gender_gross %>%
+  summarize(average_f = mean(ratiof))
 ```
 
 ```{r}
