@@ -1,7 +1,7 @@
 ---
-title: "Markdown file"
-author: "Marissa Freed"
-date: "4/30/2018"
+title: "Where Are The Women?"
+author: "By: Maggie Welsh, Marissa Freed, and Natasha Rosenthal"
+date: "May 7, 2018"
 output: 
   html_document:
     code_folding: hide
@@ -22,7 +22,13 @@ library(ggthemes)
 imdb <- dbConnect_scidb(dbname = "imdb")
 ```
 
+## Female Representation in Films and Reviews is Seriously Lacking
 
+The underrepresentation of women in the film industry is hard to ignore. According to the [2010 U.S. Census]{https://www.census.gov/prod/cen2010/briefs/c2010br-03.pdf}, the population of the  United States is 50.8% female, 49.2% male. This is not what we see when we walk into a movie theater.
+
+To demonstrate this disparity, we looked to data on the ratio of women to men in movie casts in relation to the gross profit from films’ opening weekends and IMDb ratings corresponding to these films. We found that across the board, men are overrepresented in both the top grossing films and top rated IMDb films.
+
+### SQL Queries
 ```{r first filters, warning=FALSE, message=FALSE}
 gendergross <- imdb %>%
   dbGetQuery("SELECT n.name as actor, gender, person_id, ci.movie_id, person_role_id as char_id,  cn.name as character_name, title, production_year, mi.info as language, mi2.info as gross
@@ -76,9 +82,9 @@ JOIN movie_info_idx AS mir ON mir.movie_id = t.id
 WHERE t.kind_id = 1
   AND mir.info_type_id = 101;")
 #find ratings for films
-
 ```
 
+### Code for Data Wrangling
 ```{r, warning=FALSE, message=FALSE}
 gendergross <- gendergross %>%
   mutate(gross_string = str_extract(gross, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
@@ -111,27 +117,11 @@ joined_gross <- gross_table %>%
   filter(grepl("screens\\)", info)) %>% #Used regular expressions to filter the info column to ones that show how many screens the movie was shown on in the opening weekend
   arrange(desc(gross_numeric))
 
-
 gender_gross <- joined_gross %>%
   full_join(gender_total1, by = "movie_id") %>% #join previous table with table showing ratios of women to men
   select(c(1, 2, 4, 6, 11, 12, 13, 14, 15))%>% #remove extraneous columns
   arrange(desc(gross_numeric)) %>% #show in descending order
   head(n = 100) #limit to 100 rows to get only top 100 grossing movies in opening weekend
-gender_gross
-```
-
-Average, minumum, and maximum ratios of women to men in the top 100 opening day gross
-```{r, warning=FALSE, message=FALSE}
-gender_gross %>%
-  summarize(average_f = mean(ratiof))
-gender_gross %>%
-  arrange(desc(ratiof)) %>%
-  select(c(2,3,4,9)) %>%
-  head(n=5)
-gender_gross %>%
-  arrange(ratiof) %>%
-  select(c(2,3,4,9)) %>%
-  head(n=5)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -146,10 +136,36 @@ joined_votes <- votes_table %>%
 gendervotes <- joined_votes %>%
   inner_join(gender_total1, by ="movie_id") %>% #join table with votes and ratings with table with ratio of women to men
   head(n = 100) #show top 100 rated movies
+```
+
+### Below are the top 100 highest grossing films from opening weekend:
+```{r, warning=FALSE, message=FALSE}
+gender_gross
+```
+### Below are the top 100 IMDb rated films:
+```{r, warning=FALSE, message=FALSE}
 gendervotes
 ```
 
-Average, minumum, and maximum ratios of women to men in the top 100 ratings
+The movies with the lowest ratios of women to men are mostly war or adventure movies–typically marketed toward men. Movies like *Fury*, *Pirates of the Caribbean: Curse of the Black Pearl*, and *Dunkirk*  include violence, and are 85% to 95% male, which is not a ratio that reflects the U.S. population. Whereas movies like *Lala Land*, *The Help*, and *Fifty Shades of Grey*–movies that are typically marketed toward women–have more realistic ratios of women to men, at 48% to 51% male.
+
+![Rogue One: A Star Wars Story *(2016) poster prominently displaying the female lead. Below her are the men that make up the rest of the cast: this movie has a female to male cast ratio of just 13.9%.*]{https://starwarsblog.starwars.com/wp-content/uploads/2016/10/rogueone_onesheetA.jpg}
+
+### Below are the average as well as the five movies with the lowest and highest ratio of women to men from the top 100 grossing movies:
+```{r, warning=FALSE, message=FALSE}
+gender_gross %>%
+  summarize(average_f = mean(ratiof))
+gender_gross %>%
+  arrange(desc(ratiof)) %>%
+  select(c(2,3,4,9)) %>%
+  head(n=5)
+gender_gross %>%
+  arrange(ratiof) %>%
+  select(c(2,3,4,9)) %>%
+  head(n=5)
+```
+
+### Below are average as well as the five movies with the lowest and highest ratio of women to men from the top 100 IMDb rated movies:
 ```{r}
 gendervotes %>%
   summarize(average_f = mean(ratiof))
@@ -163,7 +179,9 @@ gendervotes %>%
   head(n=5)
 ```
 
-```{r}
+It’s important to note that IMDb ratings do not always equally represent the opinions of men and women. An [article]{https://fivethirtyeight.com/features/what-if-online-movie-ratings-werent-based-almost-entirely-on-what-men-think/} from FiveThirtyEight, aptly titled “What if Online Movie Ratings Weren’t Based Almost Entirely On What Men Think?” discusses the significant bias on men's’ opinions that is apparent in IMDb ratings, as well as the implications of this disparity. 
+
+```{r, warning=FALSE, message=FALSE}
 ggplot(gendervotes, aes(x="", y = ratiof))+
   geom_boxplot(ymin = 0.0, ymax = 0.5, alpha = 0.5, fill = "#78566F") +
   coord_flip() +
@@ -175,5 +193,16 @@ ggplot(gender_gross, aes(x="", y = ratiof))+
   coord_flip() +
   labs(x = NULL, y = "Ratio of Women to Men", title = "Ratio of Women to Men in 100 Top Grossing Films", subtitle = "American Opening Weekends") +
   theme_fivethirtyeight()
-
 ```
+
+Since 2000, the average ratio of women to men in the top opening weekend grossing films was just 30.8%. Even the film with the highest ratio, *The Twilight Saga: Breaking Dawn – Part 1* (2011), a fantasy/drama film, had a ratio of less than half, at 49%. *Fury* (2014), a war film, recorded a dismal 7.4%–the lowest ratio out of the highest opening weekend gross films. This follows the trend of female-marketed films having a more realistic ratio than that of male-marketed films.
+
+Notably, *Rogue One: A Star Wars Story* (2016) had the fifth lowest ratio of highest grossing films, with just 13.9%, despite being heavily marketed as a female-led film. *Rogue One*’s female lead was a topic of much controversy when the film was released. One [article]{https://www.theatlantic.com/entertainment/archive/2016/12/with-rogue-one-the-star-wars-franchise-gets-even-more-feminist/510944/}  heralds the film as a “full feminist,” citing the many impressive feats accomplished by Jyn, the female lead, as proof of the film’s progressiveness. [Another]{https://www.smh.com.au/lifestyle/why-its-not-enough-for-feminist-films-to-have-a-great-female-lead-20170118-gtu244.html} claims that a strong female lead is “not enough” to make a film feminist, highlighting the fact that Jyn’s male ally has more lines than her. The film’s low cast ratio of women to men is a disappointing indication that even films that at once appear to be feminist works may in fact be less female-focused than they claim.
+
+This connects, unquestionably, to larger problems of representation concerning gender and race in popular media. As we’ve seen with recent movements like #OscarsSoWhite and #MeToo, Hollywood has a serious problem representing the voices of minorities. Many other media industries experience these same issues. One that has recently come into our cultural discussion is competitive esports, which experiences, unsurprisingly, a severe lack of representation, especially with regard to women. [The Overwatch League]{https://overwatchleague.com/en-us/}, perhaps today’s most popular esports league, has 129 players, only one of which is female. While many take issue with this and urge the organization to hire more women, they may fail to recognize the complexity of the issue. 
+
+![*The players from the Overwatch League team Shanghai Dragons. Se-yeon "Geguri" Kim (top right) is the sole female competitor in the Overwatch League.*]{https://www.vpesports.com/wp-content/uploads/2018/04/DauyBZQVwAAFtBp.jpg}
+
+Factors contributing to this severe lack of women in competitive esports include possible sexism on the part of the organization, of course, but also the lack of women playing at a professional skill level, the tendency for popular games to be tailored to men, our cultural emphasis on gaming as a boy’s hobby, and the larger gaming community’s propensity for sexism. Although the Overwatch League has shown that they’re willing to hire female players, these complications make the prospect of doing so, in many cases, impossible.
+ 
+The film industry is no different. While some may argue that these findings are the result of movie executives’ unwillingness to hire women at the same rates that they hire men, this would be a gross oversimplification of the issue. The large, persisting issue of minority representation in Hollywood and the film industry is a complex problem that will require an equally complex solution. While it’s easy to suggest that Hollywood needs only to hire more women to fix this issue, this is not a realistic and comprehensive solution. Instead, we need to focus on access to film education, cultural attitudes toward women in the industry, and hiring practices at every level.
