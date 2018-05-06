@@ -84,7 +84,8 @@ joined_gross <- joined_gross %>%
   mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
          gross = parse_number(gross_string)) %>%
   filter(grepl("\\(USA\\)", info)) %>%
-  arrange(desc(gross))
+  arrange(desc(gross)) %>%
+  head(n = 100)
 
 joined_gross
 ```
