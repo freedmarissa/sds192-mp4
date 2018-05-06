@@ -81,9 +81,14 @@ gross_table2 %>%
   inner_join(english_table2, by = "id")
 ```
 
+```{r actresses/characters}
+"SELECT n.name, gender, person_id, movie_id, person_role_id, cn.name
+from imdb.name n
+join imdb.cast_info ci on n.id = ci.person_id
+join imdb.char_name cn on cn.id = ci.person_role_id
+WHERE gender = 'f';"
 
-
-
+```
 
 
 
