@@ -35,6 +35,7 @@ WHERE mi.info_type_id IN (4) AND mi.info = 'English'
   AND mi2.info_type_id = 108 AND mi2.info like '%(USA%'
   and production_year > 1999
 ORDER BY title;")
+#join actor names to their characters, character names, the titles of the films, as well as language of films, and all films with opening weekend box office gross data. then filter for just English films premiering in the USA after 1999 (so only 21st century).
 
 english_table <- imdb %>%
   dbGetQuery("SELECT t.id, title, kind_id, production_year, movie_id, info_type_id, info AS language
@@ -44,6 +45,7 @@ having kind_id = 1
 and info like '%English%'
 and production_year > 1999
 and info_type_id = 4;")
+#join title of films to movie.info to filter out non-english films
 
 gross_table <- imdb %>%
   dbGetQuery("SELECT t.id, title, kind_id, production_year, info_type_id, info
@@ -53,6 +55,7 @@ having kind_id = 1
 and production_year > 1999
 and info_type_id = 108
 and info like '%USA%';")
+#join same as above but filtering USA opening weekend box office grosses 
 
 votes_table <- imdb %>%
   dbGetQuery("SELECT t.id, t.title, t.production_year, 
@@ -61,7 +64,8 @@ FROM title t
 JOIN movie_info_idx AS miv ON miv.movie_id = t.id
 WHERE t.kind_id = 1
   AND miv.info_type_id = 100
-  AND miv.info > 100000;")
+  AND miv.info > 50000;")
+#join title and movie info to find films with 100k + votes on IMDb
 
 ratings_table <- imdb %>%
   dbGetQuery("SELECT t.id, t.title, t.production_year, mir.info AS rating
@@ -69,6 +73,7 @@ FROM title t
 JOIN movie_info_idx AS mir ON mir.movie_id = t.id
 WHERE t.kind_id = 1
   AND mir.info_type_id = 101;")
+#find ratings for films
 
 ```
 
