@@ -110,7 +110,7 @@ joined_gross <- gross_table %>%
   filter(grepl("\\(USA\\)", info)) %>% #Used regular expressions to filter the info column to movies opening in the USA
   filter(grepl("screens\\)", info)) %>% #Used regular expressions to filter the info column to ones that show how many screens the movie was shown on in the opening weekend
   arrange(desc(gross_numeric))
-joined_gross
+
 
 gender_gross <- joined_gross %>%
   full_join(gender_total1, by = "movie_id") %>% #join previous table with table showing ratios of women to men
