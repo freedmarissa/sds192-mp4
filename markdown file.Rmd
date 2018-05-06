@@ -64,11 +64,39 @@ gender_total <- gendergross %>%
   summarize(gendertot = n_distinct(char_id)) %>%
   full_join(char_total, by = "movie_id")
 
-gender_total
-gender_total %>%
+gender_total1 <- gender_total %>%
   filter(gender == 'f') %>%
   group_by(movie_id) %>%
   mutate(ratiof = gendertot/total_people)
+
+```
+
+```{r}
+english_table <- imdb %>%
+  dbGetQuery("SELECT t.id, title, kind_id, production_year, movie_id, info_type_id, info AS language
+FROM imdb.title t 
+join imdb.movie_info m on t.id = m.movie_id
+having kind_id = 1 
+and info like '%English%'
+and production_year > 1999
+and info_type_id = 4;")
+
+gross_table <- imdb %>%
+  dbGetQuery("SELECT t.id, title, kind_id, production_year, info_type_id, info
+FROM imdb.title t 
+join imdb.movie_info m on t.id = m.movie_id
+having kind_id = 1 
+and production_year > 1999
+and info_type_id = 108
+and info like '%USA%';")
+
+joined_gross <-  gross_table %>%
+  inner_join(english_table, by = c("id", "title", "kind_id", "production_year")) %>%
+  mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
+         gross_numeric = parse_number(gross_string)) %>%
+  filter(grepl("\\(USA\\)", info)) %>%
+  arrange(desc(gross_numeric))
+joined_gross
 
 ```
 
@@ -99,25 +127,7 @@ joined_votes <- votes_table2 %>%
   arrange(desc(rating))
 ```
 
-```{r}
-english_table <- imdb %>%
-  dbGetQuery("SELECT t.id, title, kind_id, production_year, movie_id, info_type_id, info AS language
-FROM imdb.title t 
-join imdb.movie_info m on t.id = m.movie_id
-having kind_id = 1 
-and info like '%English%'
-and production_year > 1999
-and info_type_id = 4;")
 
-gross_table <- imdb %>%
-  dbGetQuery("SELECT t.id, title, kind_id, production_year, info_type_id, info
-FROM imdb.title t 
-join imdb.movie_info m on t.id = m.movie_id
-having kind_id = 1 
-and production_year > 1999
-and info_type_id = 108
-and info like '%USA%';")
-```
 
 
 
