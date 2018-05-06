@@ -98,6 +98,10 @@ joined_gross <-  gross_table %>%
   arrange(desc(gross_numeric))
 joined_gross
 
+gender_gross <- joined_gross %>%
+  full_join(gender_total1, by = "movie_id")
+
+gender_gross
 ```
 
 ```{r}
