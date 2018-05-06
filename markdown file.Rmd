@@ -87,7 +87,6 @@ joined_gross <- joined_gross %>%
   arrange(desc(gross))
 
 joined_gross
-
 ```
 
 ```{r}
