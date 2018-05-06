@@ -126,9 +126,11 @@ gender_gross %>%
   summarize(average_f = mean(ratiof))
 gender_gross %>%
   arrange(desc(ratiof)) %>%
+  select(c(2,3,4,9)) %>%
   head(n=5)
 gender_gross %>%
   arrange(ratiof) %>%
+  select(c(2,3,4,9)) %>%
   head(n=5)
 ```
 
@@ -153,9 +155,11 @@ gendervotes %>%
   summarize(average_f = mean(ratiof))
 gendervotes %>%
   arrange(desc(ratiof)) %>%
+  select(c(2,3,5,9)) %>%
   head(n=5)
 gendervotes %>%
-  arrange(ratiof) %>%
+  arrange(ratiof) %>% 
+  select(c(2,3,5,9)) %>%
   head(n=5)
 ```
 
