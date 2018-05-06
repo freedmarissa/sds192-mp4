@@ -17,6 +17,8 @@ library(tidyverse)
 library(mdsr)
 library(RMySQL)
 library(data.table)
+library(ggplot2)
+library(ggthemes)
 imdb <- dbConnect_scidb(dbname = "imdb")
 ```
 
@@ -64,7 +66,7 @@ FROM title t
 JOIN movie_info_idx AS miv ON miv.movie_id = t.id
 WHERE t.kind_id = 1
   AND miv.info_type_id = 100
-  AND miv.info > 50000;")
+  AND miv.info > 75000;")
 #join title and movie info to find films with 100k + votes on IMDb
 
 ratings_table <- imdb %>%
@@ -157,3 +159,17 @@ gendervotes %>%
   head(n=5)
 ```
 
+```{r}
+ggplot(gendervotes, aes(x="", y = ratiof))+
+  geom_boxplot(ymin = 0.0, ymax = 0.5, alpha = 0.5, fill = "#78566F") +
+  coord_flip() +
+  labs(x = NULL, y = "Ratio of Women to Men", title = "Ratio of Women to Men in 100 Top Rated Films", subtitle = "Using IMDb Ratings") +
+  theme_fivethirtyeight()
+
+ggplot(gender_gross, aes(x="", y = ratiof))+
+  geom_boxplot(ymin = 0.0, ymax = 0.5, alpha = 0.5, fill = "#EE8A78") +
+  coord_flip() +
+  labs(x = NULL, y = "Ratio of Women to Men", title = "Ratio of Women to Men in 100 Top Grossing Films", subtitle = "American Opening Weekends") +
+  theme_fivethirtyeight()
+
+```
