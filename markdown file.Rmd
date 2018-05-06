@@ -58,29 +58,29 @@ and info like '%USA%';")
 ```{r, warning=FALSE, message=FALSE}
 gendergross <- gendergross %>%
   mutate(gross_string = str_extract(gross, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
-         gross_numeric = parse_number(gross_string)) %>%
-  filter(grepl("\\(USA\\)", gross)) %>%
+         gross_numeric = parse_number(gross_string)) %>% #Used regular expressions to create a new column where gross is a numeric vector
+  filter(grepl("\\(USA\\)", gross)) %>% #Used regular expressions to filter the info column to movies opening in the USA
   arrange(desc(gross_numeric))
+
 
 char_total <- gendergross %>%
   group_by(movie_id) %>%
-  summarize(total_people = n_distinct(char_id))
+  summarize(total_people = n_distinct(char_id)) #find total number of actors listed for each movie
 
 gender_total <- gendergross %>%
   group_by(movie_id, gender) %>%
-  summarize(gendertot = n_distinct(char_id)) %>%
-  full_join(char_total, by = "movie_id")
+  summarize(gendertot = n_distinct(char_id)) %>% #find total number of actors listed for each movie by gender
+  full_join(char_total, by = "movie_id") #join with char_total to get column with total actors for each moview
 
 gender_total1 <- gender_total %>%
   filter(gender == 'f') %>%
   group_by(movie_id) %>%
-  mutate(ratiof = gendertot/total_people)
-
+  mutate(ratiof = gendertot/total_people) #create column with the ratio of women to men for each movie
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-joined_gross <-  gross_table %>%
-  inner_join(english_table, by = c("id", "title", "kind_id", "production_year")) %>%
+joined_gross <- gross_table %>%
+  inner_join(english_table, by = c("id", "title", "kind_id", "production_year")) %>% 
   mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
          gross_numeric = parse_number(gross_string)) %>%
   filter(grepl("\\(USA\\)", info)) %>%
