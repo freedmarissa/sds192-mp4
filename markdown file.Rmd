@@ -49,17 +49,13 @@ ORDER BY title;")
 ```
 
 ```{r}
-joined_gross <- gross_table2 %>%
-  inner_join(english_table2, by = c("id", "title", "kind_id", "production_year"))
+gendergross <- gendergross %>%
+  mutate(gross_string = str_extract(gross, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
+         gross_numeric = parse_number(gross_string)) %>%
+  filter(grepl("\\(USA\\)", gross)) %>%
+  arrange(desc(gross_numeric))
 
-joined_gross <- joined_gross %>%
-  mutate(gross_string = str_extract(info, "^\\$[0-9]+,[0-9]{3},[0-9]{3}"),
-         gross = parse_number(gross_string)) %>%
-  filter(grepl("\\(USA\\)", info)) %>%
-  arrange(desc(gross)) %>%
-  head(n = 100)
-
-joined_gross[-c(1,9), ]
+gendergross
 ```
 
 ```{r}
