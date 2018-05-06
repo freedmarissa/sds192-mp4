@@ -31,7 +31,22 @@ imdb <- dbConnect_scidb(dbname = "imdb")
 
 issue: the gross info category shows weekly gross for every week the film was open, so I think we're better off looking solely at opening weekend sales.
 
+```{r first filters}
+gendergross <- imdb %>%
+  dbGetQuery("SELECT n.name as actor, gender, person_id, ci.movie_id, person_role_id as char_id,  cn.name as character_name, title, production_year, mi.info as language, mi2.info as gross
+from imdb.name n
+join imdb.cast_info ci on n.id = ci.person_id
+join imdb.char_name cn on cn.id = ci.person_role_id
+join imdb.title t on t.id = ci.movie_id
+JOIN imdb.movie_info mi ON mi.movie_id = ci.movie_id
+JOIN imdb.movie_info mi2 ON mi2.movie_id = ci.movie_id
+WHERE mi.info_type_id IN (4) AND mi.info = 'English'
+  AND kind_id = 1
+  AND mi2.info_type_id = 108 AND mi2.info like '%(USA%'
+  and production_year > 1999
+ORDER BY title;")
 
+```
 
 ```{r}
 joined_gross <- gross_table2 %>%
